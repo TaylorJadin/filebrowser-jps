@@ -12,8 +12,8 @@ services:
       LETSENCRYPT_EMAIL: ${EMAIL}
     volumes:
       - ./srv:/srv
-      - ./database.db:/database.db
-      - ./filebrowser.json:/.filebrowser.json
+      - db:/database.db
+      - config:/.filebrowser.json
     restart: unless-stopped
 
   nginx-proxy:
@@ -45,3 +45,5 @@ services:
 
 volumes:
   certs:
+  db:
+  config:
