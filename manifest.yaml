@@ -1,0 +1,107 @@
+type: install
+id: docker-jps-starter
+version: '1.0'
+appVersion: latest
+name: Docker JPS Starter
+logo: https://reclaimcloud-reclm.cdn.jelastic.net/wp-content/uploads/2020/06/cropped-Reclaim-Cloud-Logo-New.png
+homepage: https://reclaim.cloud
+categories: 
+- apps/education
+description: 
+  text: "A sentence or two long description should go here."
+  short: "A short description."
+
+globals:
+  shortname: starter-app
+  path: /root/starter-app
+  repo: https://github.com/taylorjadin/docker-jps-starter
+
+nodes:
+  nodeType: dockerengine
+  nodeGroup: cp
+  cloudlets: 32
+  fixedcloudlets: 1
+  extip: true
+  displayName: AppServer
+  addons: [change-domain, update]
+  volumes: ["${globals.path}"]
+
+settings:
+  domain:
+    fields:
+      - name: displayfield
+        type: displayfield
+        hideLabel: true
+        markup: |
+          The new domain should already have an A record pointed at this environment's IP address.
+      - name: domain
+        hideLabel: true
+        caption: Domain
+        type: string
+        vtype: extdomain
+
+onInstall:
+  - setup
+
+actions:
+  setup:      
+    - cmd[cp]: |-
+        mkdir -p ${globals.path}
+        cd ${globals.path}
+        git clone ${globals.repo} --depth 1 .
+        rm -rf .git
+        rm manifest.yaml
+        sed -i \
+        -e "s|DOMAIN=.*|DOMAIN=${env.domain}|" \
+        -e "s|EMAIL=.*|EMAIL=${user.email}|" \
+        .env
+        docker-compose up -d
+    - env.file.AddFavorite:
+        nodeGroup: cp
+        path: ${globals.path}
+        keyword: ${globals.shortname}
+
+addons:
+  - id: change-domain
+    name: Domain Configuration
+    description: Change domain name and issue Let's Encrypt certificates.
+    permanent: true
+    buttons:
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Changing domain...
+        action: changeDomain
+        caption: Change
+        successText: The domain has been updated successfully!
+        settings: domain
+        title: Please specify the new domain name
+
+    actions:
+      changeDomain:
+        - cmd[cp]: |-
+            cd ${globals.path}
+            sed -i \
+            -e "s|DOMAIN=.*|DOMAIN=${settings.domain}|" \
+            .env
+            docker-compose up -d --force-recreate
+    
+  - id: update
+    name: Update
+    description: Pull the latest version of docker containers
+    permanent: true
+    buttons:
+      - confirmText: Are you sure you want to proceed?
+        loadingText: Updating...
+        action: pullContainers
+        caption: Update
+        successText: Your environment has been updated!
+        title: Update
+    actions:
+      pullContainers:
+        -  cmd[cp]: |-
+            cd ${globals.path}
+            docker-compose pull
+            docker-compose down
+            docker-compose up -d --force-recreate
+success: | 
+  **${env.displayName}**: [https://${env.domain}/](https://${env.domain}/)
+  - If you want to map a custom domain, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert.
