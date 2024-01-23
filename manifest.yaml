@@ -52,6 +52,7 @@ actions:
         rm -rf .git
         rm manifest.yaml
         rm logo.png
+        touch database.db
         sed -i \
         -e "s|DOMAIN=.*|DOMAIN=${env.domain}|" \
         -e "s|EMAIL=.*|EMAIL=${user.email}|" \

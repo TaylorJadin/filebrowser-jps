@@ -12,6 +12,7 @@ services:
       LETSENCRYPT_EMAIL: ${EMAIL}
     volumes:
       - ./srv:/srv
+      - ./database.db:/database.db
     restart: unless-stopped
 
   nginx-proxy:
