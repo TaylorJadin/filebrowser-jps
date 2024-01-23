@@ -1,20 +1,20 @@
 type: install
-id: docker-jps-starter
+id: filebrowser
 version: '1.0'
 appVersion: latest
-name: Docker JPS Starter
-logo: https://reclaimcloud-reclm.cdn.jelastic.net/wp-content/uploads/2020/06/cropped-Reclaim-Cloud-Logo-New.png
-homepage: https://reclaim.cloud
+name: Filebrowser
+logo: https://raw.githubusercontent.com/TaylorJadin/filebrowser-jps/main/logo.png
+homepage: https://filebrowser.org/
 categories: 
 - apps/education
 description: 
-  text: "A sentence or two long description should go here."
-  short: "A short description."
+  text: "filebrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files. It allows the creation of multiple users and each user can have its own directory. It can be used as a standalone app."
+  short: "A sime web-based file management tool."
 
 globals:
-  shortname: starter-app
-  path: /root/starter-app
-  repo: https://github.com/taylorjadin/docker-jps-starter
+  shortname: filebrowser
+  path: /root/filebrowser
+  repo: https://github.com/taylorjadin/filebrowser-jps
 
 nodes:
   nodeType: dockerengine
@@ -51,6 +51,7 @@ actions:
         git clone ${globals.repo} --depth 1 .
         rm -rf .git
         rm manifest.yaml
+        rm logo.png
         sed -i \
         -e "s|DOMAIN=.*|DOMAIN=${env.domain}|" \
         -e "s|EMAIL=.*|EMAIL=${user.email}|" \
