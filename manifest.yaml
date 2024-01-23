@@ -105,4 +105,7 @@ addons:
             docker-compose up -d --force-recreate
 success: | 
   **${env.displayName}**: [https://${env.domain}/](https://${env.domain}/)
+  Username: admin
+  Password: admin
+  - Change the default password by logging in and going to **Settings** > **User Management**
   - If you want to map a custom domain, point an A record at **${nodes.cp.extIPs}** then use the **Domain Configuration** Add-On to change the domain name and issue a new Let's Encrypt cert.
