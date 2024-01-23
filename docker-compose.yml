@@ -2,7 +2,7 @@ version: '2'
 
 services:
 
-  apache:
+  filebrowser:
     image: filebrowser/filebrowser
     container_name: filebrowser
     environment:
